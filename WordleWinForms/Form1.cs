@@ -1,33 +1,47 @@
-﻿namespace WordleWinForms
-{
-    public partial class Form1 : Form
-    {
-        private Game _game;
-        private Graphics _graphics;
+﻿namespace WordleWinForms;
 
-        public Form1()
-        {
-            InitializeComponent();
-            BackColor = Color.Black;
-            Size = new Size(516, 820);
-            FormBorderStyle = FormBorderStyle.FixedSingle;
-            _game = new(new Surface(_graphics), new Banner());
-        }
+public partial class Form1 : Form {
+    const double BASE_SCREEN_H = 1080.0;
+    const int BASE_WIN_W = 514;
+    const int BASE_WIN_H = 818;
 
-        protected override void OnShown(EventArgs e)
-        {
-            _game.Initialize();
-        }
+    private readonly double _scale = (double)(Screen.PrimaryScreen?.WorkingArea.Height ?? BASE_SCREEN_H) / (double)BASE_SCREEN_H;
+    private Game _game;
+    private Surface _surface;
 
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-            _graphics.Clear(BackColor);
-            _game.HandleEvent(e);
-        }
+    public Form1() {
+        InitializeComponent();
+        BackColor = Color.Black;
+        Size = new Size((int)(BASE_WIN_W * _scale), (int)(BASE_WIN_H * _scale));
+        FormBorderStyle = FormBorderStyle.FixedSingle;
+        DoubleBuffered = true;
+        ShowIcon = false;
+        Text = "Wordle";
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
+        _surface = new(_scale, (int)(BASE_WIN_W * _scale));
+        _game = new();
+    }
 
-        }
+    protected override void OnShown(EventArgs e) {
+        base.OnShown(e);
+
+        _game.Initialize();
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e) {
+        base.OnKeyDown(e);
+        _game.HandleEvent(e);
+        Invalidate();
+    }
+
+    protected override void OnPaint(PaintEventArgs e) {
+        // Call the OnPaint method of the base class.
+        base.OnPaint(e);
+
+        _surface.DrawGame(e.Graphics, _game);
+    }
+
+    private void Form1_Load(object sender, EventArgs e) {
+
     }
 }

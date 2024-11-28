@@ -1,33 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WordleWinForms.Enums;
+﻿namespace WordleWinForms;
 
-namespace WordleWinForms
-{
-    internal class Square
-    {
-        private Status _status;
-        private char _letter;
+/// <summary>
+/// Represents a square in the Wordle game grid.
+/// </summary>
+internal class Square {
+    /// <summary>
+    /// Gets or sets the status of the square.
+    /// </summary>
+    public Status Status { get; set; } = Status.Inactive;
 
-        public Status Status
-        {
-            get { return _status; }
-            set { _status = value; }
-        }
+    /// <summary>
+    /// Gets or sets the letter in the square.
+    /// </summary>
+    public char Letter { get; set; } = ' ';
 
-        public char Letter
-        {
-            get { return _letter; }
-            set { _letter = value; }
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Square"/> class.
+    /// </summary>
+    public Square() { }
 
-        public Square()
-        {
-            _status = Status.Inactive;
-            _letter = ' ';
-        }
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Square"/> class with the specified status and letter.
+    /// </summary>
+    /// <param name="status">The status of the square.</param>
+    /// <param name="letter">The letter in the square.</param>
+    public Square(Status status, char letter) {
+        Status = status;
+        Letter = letter;
+    }
+
+    /// <summary>
+    /// Returns a string that represents the current square.
+    /// </summary>
+    /// <returns>A string that represents the current square.</returns>
+    public override string ToString() {
+        return $"Square: {Letter}, Status: {Status}";
     }
 }
