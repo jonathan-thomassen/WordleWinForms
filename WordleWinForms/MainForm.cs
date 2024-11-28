@@ -1,6 +1,6 @@
 ﻿namespace WordleWinForms;
 
-public partial class Form1 : Form {
+public partial class MainForm : Form {
     const double BASE_SCREEN_H = 1080.0;
     const int BASE_WIN_W = 514;
     const int BASE_WIN_H = 818;
@@ -9,7 +9,7 @@ public partial class Form1 : Form {
     private Game _game;
     private Surface _surface;
 
-    public Form1() {
+    public MainForm() {
         InitializeComponent();
         BackColor = Color.Black;
         Size = new Size((int)(BASE_WIN_W * _scale), (int)(BASE_WIN_H * _scale));
