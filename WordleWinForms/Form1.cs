@@ -1,30 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-
-namespace WordleWinForms
+﻿namespace WordleWinForms
 {
     public partial class Form1 : Form
     {
         private Game _game;
+        private Graphics _graphics;
 
         public Form1()
         {
             InitializeComponent();
+            BackColor = Color.Black;
             Size = new Size(516, 820);
-            Graphics g = CreateGraphics();
-            _game = new(new Screen(g), new Banner());
-        }
-
-        protected override void OnPaint(PaintEventArgs e)
-        {
-            _game.Update();
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            _game = new(new Surface(_graphics), new Banner());
         }
 
         protected override void OnShown(EventArgs e)
@@ -32,6 +19,11 @@ namespace WordleWinForms
             _game.Initialize();
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            _graphics.Clear(BackColor);
+            _game.HandleEvent(e);
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {

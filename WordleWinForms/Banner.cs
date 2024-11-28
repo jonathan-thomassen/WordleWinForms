@@ -4,16 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WordleWinForms
-{
-    internal class Banner
-    {
-        private string _caption = "";
+namespace WordleWinForms;
 
-        public string Caption
-        {
-            get { return _caption; }
-            set { _caption = value; }
-        }
-    }
+internal record Banner
+{
+    public string Caption { get; set; } = "";
 }
