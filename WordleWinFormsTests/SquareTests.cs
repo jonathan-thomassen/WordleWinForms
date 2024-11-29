@@ -1,76 +1,74 @@
 using WordleWinForms;
 using WordleWinForms.Enums;
-using Xunit;
 
-namespace WordleWinFormsTests
+namespace WordleWinFormsTests;
+
+public class SquareTests
 {
-    public class SquareTests
+    [Fact]
+    public void DefaultConstructor_ShouldSetDefaultValues()
     {
-        [Fact]
-        public void DefaultConstructor_ShouldSetDefaultValues()
-        {
-            // Arrange & Act
-            var square = new Square();
+        // Arrange & Act
+        var square = new Square();
 
-            // Assert
-            Assert.Equal(Status.Inactive, square.Status);
-            Assert.Equal(' ', square.Letter);
-        }
+        // Assert
+        Assert.Equal(Status.Inactive, square.Status);
+        Assert.Equal(' ', square.Letter);
+    }
 
-        [Fact]
-        public void ParameterizedConstructor_ShouldSetValues()
-        {
-            // Arrange
-            var expectedStatus = Status.Correct;
-            var expectedLetter = 'A';
+    [Fact]
+    public void ParameterizedConstructor_ShouldSetValues()
+    {
+        // Arrange
+        var expectedStatus = Status.Correct;
+        var expectedLetter = 'A';
 
-            // Act
-            var square = new Square(expectedStatus, expectedLetter);
+        // Act
+        var square = new Square(expectedStatus, expectedLetter);
 
-            // Assert
-            Assert.Equal(expectedStatus, square.Status);
-            Assert.Equal(expectedLetter, square.Letter);
-        }
+        // Assert
+        Assert.Equal(expectedStatus, square.Status);
+        Assert.Equal(expectedLetter, square.Letter);
+    }
 
-        [Fact]
-        public void SetStatus_ShouldUpdateStatus()
-        {
-            // Arrange
-            var square = new Square();
-            var newStatus = Status.Correct;
+    [Fact]
+    public void SetStatus_ShouldUpdateStatus()
+    {
+        // Arrange
+        var square = new Square();
+        var newStatus = Status.Correct;
 
-            // Act
-            square.Status = newStatus;
+        // Act
+        square.Status = newStatus;
 
-            // Assert
-            Assert.Equal(newStatus, square.Status);
-        }
+        // Assert
+        Assert.Equal(newStatus, square.Status);
+    }
 
-        [Fact]
-        public void SetLetter_ShouldUpdateLetter()
-        {
-            // Arrange
-            var square = new Square();
-            var newLetter = 'B';
+    [Fact]
+    public void SetLetter_ShouldUpdateLetter()
+    {
+        // Arrange
+        var square = new Square();
+        var newLetter = 'B';
 
-            // Act
-            square.Letter = newLetter;
+        // Act
+        square.Letter = newLetter;
 
-            // Assert
-            Assert.Equal(newLetter, square.Letter);
-        }
+        // Assert
+        Assert.Equal(newLetter, square.Letter);
+    }
 
-        [Fact]
-        public void ToString_ShouldReturnFormattedString()
-        {
-            // Arrange
-            var square = new Square(Status.Correct, 'C');
+    [Fact]
+    public void ToString_ShouldReturnFormattedString()
+    {
+        // Arrange
+        var square = new Square(Status.Correct, 'C');
 
-            // Act
-            var result = square.ToString();
+        // Act
+        var result = square.ToString();
 
-            // Assert
-            Assert.Equal("Square: C, Status: Correct", result);
-        }
+        // Assert
+        Assert.Equal("Square: C, Status: Correct", result);
     }
 }

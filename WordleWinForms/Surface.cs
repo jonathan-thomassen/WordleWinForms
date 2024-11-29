@@ -12,8 +12,8 @@ internal class Surface
     private const int SQUARE_FONT_SIZE_OFFSET = 10;
     private const int BANNER_SIZE_BASE = 34;
     private const string BANNER_FONT = "Verdana";
-    private const int BANNER_FONT_SIZE_BASE = 8;
-    private const int BANNER_FONT_SIZE_OFFSET = 5;
+    private const int BANNER_FONT_SIZE_BASE = 4;
+    private const int BANNER_FONT_SIZE_OFFSET = 8;
     private const string KEYB_ROW_1 = "QWERTYUIOP";
     private const string KEYB_ROW_2 = "ASDFGHJKL";
     private const string KEYB_ROW_3 = "ZXCVBNM";
@@ -21,8 +21,8 @@ internal class Surface
     private const int KEYB_SPACING_BASE = 7;
     private const int KEYB_ROW_OFFSET_BASE = 8;
     private const string KEYB_FONT = "Trebuchet MS";
-    private const int KEYB_FONT_SIZE_BASE = 11;
-    private const int KEYB_FONT_SIZE_OFFSET = 3;
+    private const int KEYB_FONT_SIZE_BASE = 8;
+    private const int KEYB_FONT_SIZE_OFFSET = 5;
 
     private readonly int _winW;
     private readonly int _margin;

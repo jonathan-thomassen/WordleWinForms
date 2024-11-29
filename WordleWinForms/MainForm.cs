@@ -3,7 +3,7 @@
 public partial class MainForm : Form
 {
     const double BASE_SCREEN_H = 1080.0;
-    const int BASE_CLIENT_WIDTH = 500;
+    const int BASE_CLIENT_WIDTH = 496;
     const int BASE_CLIENT_HEIGHT = 792;
 
     private readonly double _scale;
