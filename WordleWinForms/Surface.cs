@@ -63,7 +63,7 @@ internal class Surface
     /// <param name="letters">The dictionary of letters and their statuses.</param>
     /// <param name="letter">The letter to get the color for.</param>
     /// <returns>The color corresponding to the letter's status.</returns>
-    public Color GetLetterColor(Dictionary<char, Status> letters, char letter)
+    internal static Color GetLetterColor(Dictionary<char, Status> letters, char letter)
     {
         return letters[letter] switch
         {
@@ -80,7 +80,7 @@ internal class Surface
     /// </summary>
     /// <param name="graphics">The graphics object to draw on.</param>
     /// <param name="game">The game object containing the game state.</param>
-    public void DrawGame(Graphics graphics, Game game)
+    internal void DrawGame(Graphics graphics, Game game)
     {
         int bannerStart = DrawSquares(graphics, game.Grid);
         int keyboardStart = DrawBanner(graphics, game.Banner, bannerStart);
@@ -93,7 +93,7 @@ internal class Surface
     /// <param name="graphics">The graphics object to draw on.</param>
     /// <param name="grid">The game grid.</param>
     /// <returns>The y-coordinate of the bottom of the last row of squares.</returns>
-    public int DrawSquares(Graphics graphics, Square[][] grid)
+    internal int DrawSquares(Graphics graphics, Square[][] grid)
     {
         using Font font = new(SQUARE_FONT, _squareFontSize);
         using SolidBrush brush = new(DefaultColor);
@@ -130,7 +130,7 @@ internal class Surface
     /// <param name="graphics">The graphics object to draw on.</param>
     /// <param name="banner">The banner object containing the caption.</param>
     /// <param name="startY">The y-coordinate to start drawing the banner.</param>
-    public int DrawBanner(Graphics graphics, Banner banner, int startY)
+    internal int DrawBanner(Graphics graphics, Banner banner, int startY)
     {
         using Font font = new(BANNER_FONT, _bannerFontSize);
         using SolidBrush brush = new(NotTestedColor);
@@ -154,7 +154,7 @@ internal class Surface
     /// <param name="graphics">The graphics object to draw on.</param>
     /// <param name="startY">The y-coordinate to start drawing the keyboard.</param>
     /// <param name="letters">The dictionary of letters and their statuses.</param>
-    public void DrawKeyboard(Graphics graphics, int startY, Dictionary<char, Status> letters)
+    internal void DrawKeyboard(Graphics graphics, int startY, Dictionary<char, Status> letters)
     {
         using Font font = new(KEYB_FONT, _keybFontSize);
         using SolidBrush brush = new(DefaultColor);
@@ -177,7 +177,7 @@ internal class Surface
         }
     }
 
-    private void DrawCharacter(Graphics graphics, int row, int column, char letter, Dictionary<char, Status> letters, SolidBrush brush, Pen pen, Font font, StringFormat format, int startY)
+    internal void DrawCharacter(Graphics graphics, int row, int column, char letter, Dictionary<char, Status> letters, SolidBrush brush, Pen pen, Font font, StringFormat format, int startY)
     {
         brush.Color = GetLetterColor(letters, letter);
         pen.Color = brush.Color;
@@ -192,7 +192,7 @@ internal class Surface
     /// <param name="brush">The brush to set the color for.</param>
     /// <param name="pen">The pen to set the color for.</param>
     /// <param name="status">The status to determine the color.</param>
-    private static void SetBrushAndPenColor(SolidBrush brush, Pen pen, Status status)
+    internal static void SetBrushAndPenColor(SolidBrush brush, Pen pen, Status status)
     {
         brush.Color = status switch
         {
@@ -205,7 +205,7 @@ internal class Surface
         pen.Color = brush.Color;
     }
 
-    public static void ListAvailableFonts()
+    internal static void ListAvailableFonts()
     {
         using InstalledFontCollection fontsCollection = new();
         FontFamily[] fontFamilies = fontsCollection.Families;

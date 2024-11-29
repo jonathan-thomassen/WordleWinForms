@@ -28,7 +28,6 @@ public partial class MainForm : Form
     protected override void OnShown(EventArgs e)
     {
         base.OnShown(e);
-        _game.Initialize();
     }
 
     protected override void OnKeyDown(KeyEventArgs e)

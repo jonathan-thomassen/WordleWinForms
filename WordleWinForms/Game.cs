@@ -3,26 +3,31 @@
 /// <summary>
 /// Represents the Wordle game.
 /// </summary>
-internal class Game {
+internal class Game
+{
     private const string ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private const int COLUMNS = 5;
     private const int ROWS = 6;
 
-    private GameState _state;
-
-    internal Square[][] Grid { get; private set; } = Array.Empty<Square[]>();
+    internal GameState State { get; set; }
+    internal Square[][] Grid { get; set; } = [];
     internal Banner Banner { get; private set; } = new();
-
-    private string _word = "";
+    internal string Word { get; set; } = String.Empty;
+    internal int ActiveRow { get; set; }
+    internal int ActiveColumn { get; set; }
     internal readonly Dictionary<char, Status> Letters = new();
-    private int _activeRow;
-    private int _activeColumn;
+
+    public Game()
+    {
+        Initialize();
+    }
 
     /// <summary>
     /// Initializes the game.
     /// </summary>
-    public void Initialize() {
-        _state = GameState.InGame;
+    internal void Initialize()
+    {
+        State = GameState.InGame;
 
         Grid = Enumerable.Range(0, ROWS)
                           .Select(_ => Enumerable.Range(0, COLUMNS)
@@ -30,20 +35,23 @@ internal class Game {
                                                  .ToArray())
                           .ToArray();
 
-        foreach (var square in Grid[0]) {
+        foreach (var square in Grid[0])
+        {
             square.Status = Status.NotTested;
         }
 
         NewWord();
         InitializeLetters();
-        _activeRow = 0;
-        _activeColumn = 0;
+        ActiveRow = 0;
+        ActiveColumn = 0;
         Banner.Caption = "Welcome!";
     }
 
-    private void InitializeLetters() {
+    internal void InitializeLetters()
+    {
         Letters.Clear();
-        foreach (char letter in ALPHABET) {
+        foreach (char letter in ALPHABET)
+        {
             Letters.Add(letter, Status.NotTested);
         }
     }
@@ -51,10 +59,11 @@ internal class Game {
     /// <summary>
     /// Selects a new word for the game.
     /// </summary>
-    public void NewWord() {
+    internal void NewWord()
+    {
         Random random = new();
         int wordNumber = random.Next(WordList.Words.Count);
-        _word = WordList.Words[wordNumber];
+        Word = WordList.Words[wordNumber];
     }
 
     /// <summary>
@@ -62,7 +71,8 @@ internal class Game {
     /// </summary>
     /// <param name="guess">The guessed word.</param>
     /// <returns>True if the guess is in the dictionary, otherwise false.</returns>
-    public static bool CheckDictionary(string guess) {
+    internal static bool CheckDictionary(string guess)
+    {
         return WordList.Words.Contains(guess.ToLower());
     }
 
@@ -71,7 +81,8 @@ internal class Game {
     /// </summary>
     /// <param name="guess">The guessed word.</param>
     /// <returns>The validation state of the guess.</returns>
-    public ValidationState ValidateGuess(string guess) {
+    internal static ValidationState ValidateGuess(string guess)
+    {
         return CheckDictionary(guess) ? ValidationState.Valid : ValidationState.NotInDictionary;
     }
 
@@ -80,114 +91,171 @@ internal class Game {
     /// </summary>
     /// <param name="guess">The guessed word.</param>
     /// <returns>A tuple containing the list of statuses and the number of correct letters.</returns>
-    public (List<Status>, int) TestGuess(string guess) {
+    internal (List<Status>, int) TestGuess(string guess)
+    {
         guess = guess.ToLower();
         List<Status> statusList = Enumerable.Repeat(Status.NotTested, COLUMNS).ToList();
         int correctLetters = 0;
-        char[] tempWord = _word.ToCharArray();
+        char[] tempWord = Word.ToCharArray();
 
-        // First pass: Check for correct letters
-        for (int i = 0; i < COLUMNS; i++) {
-            if (guess[i] == _word[i]) {
+        correctLetters = CheckCorrectLetters(guess, statusList, tempWord);
+        CheckWrongPlaceAndIncorrectLetters(guess, statusList, tempWord);
+
+        return (statusList, correctLetters);
+    }
+
+    internal int CheckCorrectLetters(string guess, List<Status> statusList, char[] tempWord)
+    {
+        int correctLetters = 0;
+        for (int i = 0; i < COLUMNS; i++)
+        {
+            if (guess[i] == Word[i])
+            {
                 statusList[i] = Status.Correct;
                 Letters[guess.ToUpper()[i]] = Status.Correct;
                 correctLetters++;
                 tempWord[i] = '\0'; // Mark as used
             }
         }
+        return correctLetters;
+    }
 
-        // Second pass: Check for wrong place and incorrect letters
-        for (int i = 0; i < COLUMNS; i++) {
+    internal void CheckWrongPlaceAndIncorrectLetters(string guess, List<Status> statusList, char[] tempWord)
+    {
+        for (int i = 0; i < COLUMNS; i++)
+        {
             if (statusList[i] == Status.Correct) continue;
 
-            if (tempWord.Contains(guess[i])) {
+            if (tempWord.Contains(guess[i]))
+            {
                 statusList[i] = Status.WrongPlace;
                 if (Letters[guess.ToUpper()[i]] != Status.Correct)
                     Letters[guess.ToUpper()[i]] = Status.WrongPlace;
                 tempWord[Array.IndexOf(tempWord, guess[i])] = '\0'; // Mark as used
-            } else {
+            }
+            else
+            {
                 statusList[i] = Status.Incorrect;
                 if (Letters[guess.ToUpper()[i]] != Status.Correct && Letters[guess.ToUpper()[i]] != Status.WrongPlace)
                     Letters[guess.ToUpper()[i]] = Status.Incorrect;
             }
         }
-
-        return (statusList, correctLetters);
     }
 
     /// <summary>
     /// Handles the key event.
     /// </summary>
     /// <param name="e">The key event arguments.</param>
-    public void HandleEvent(KeyEventArgs e) {
-        if (_state == GameState.OutOfGame) {
+    internal void HandleEvent(KeyEventArgs e)
+    {
+        if (State == GameState.OutOfGame)
+        {
             Initialize();
-        } else {
+        }
+        else
+        {
             HandleKeyPress(e);
         }
     }
 
-    private void HandleKeyPress(KeyEventArgs e) {
-        if (e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z && Grid[_activeRow][_activeColumn].Letter == ' ') {
+    internal void HandleKeyPress(KeyEventArgs e)
+    {
+        if (e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z && Grid[ActiveRow][ActiveColumn].Letter == ' ')
+        {
             HandleLetterInput(e);
-        } else if (e.KeyCode == Keys.Back) {
+        }
+        else if (e.KeyCode == Keys.Back)
+        {
             HandleBackspace();
-        } else if (e.KeyCode == Keys.Enter && Grid[_activeRow][_activeColumn].Letter != ' ') {
+        }
+        else if (e.KeyCode == Keys.Enter && Grid[ActiveRow][ActiveColumn].Letter != ' ')
+        {
             HandleEnter();
         }
     }
 
-    private void HandleLetterInput(KeyEventArgs e) {
-        Grid[_activeRow][_activeColumn].Letter = (char)e.KeyData;
-        if (_activeColumn <= 3)
-            _activeColumn += 1;
-        Banner.Caption = "Guess #" + (_activeRow + 1);
+    internal void HandleLetterInput(KeyEventArgs e)
+    {
+        Grid[ActiveRow][ActiveColumn].Letter = (char)e.KeyData;
+        if (ActiveColumn <= 3)
+            ActiveColumn += 1;
+        Banner.Caption = "Guess #" + (ActiveRow + 1);
     }
 
-    private void HandleBackspace() {
-        if (_activeColumn >= 1 && Grid[_activeRow][_activeColumn].Letter == ' ')
-            _activeColumn -= 1;
-        Grid[_activeRow][_activeColumn].Letter = ' ';
-        Banner.Caption = "Guess #" + (_activeRow + 1);
+    internal void HandleBackspace()
+    {
+        if (ActiveColumn >= 1 && Grid[ActiveRow][ActiveColumn].Letter == ' ')
+            ActiveColumn -= 1;
+        Grid[ActiveRow][ActiveColumn].Letter = ' ';
+        Banner.Caption = "Guess #" + (ActiveRow + 1);
     }
 
-    private void HandleEnter() {
-        string guess = new string(Grid[_activeRow].Select(square => square.Letter).ToArray());
+    internal void HandleEnter()
+    {
+        string guess = new string(Grid[ActiveRow].Select(square => square.Letter).ToArray());
         ValidationState validationState = ValidateGuess(guess);
-        if (validationState == ValidationState.Valid) {
+        if (validationState == ValidationState.Valid)
+        {
             ProcessValidGuess(guess);
-        } else if (validationState == ValidationState.NotInDictionary) {
+        }
+        else if (validationState == ValidationState.NotInDictionary)
+        {
             ResetCurrentRow();
             Banner.Caption = "Word not in dictionary. Try again";
         }
     }
 
-    private void ProcessValidGuess(string guess) {
+    internal void ProcessValidGuess(string guess)
+    {
         (List<Status> statuses, int correctLetters) = TestGuess(guess);
-        for (int i = 0; i < Grid[_activeRow].Length; i++) {
-            Grid[_activeRow][i].Status = statuses[i];
-        }
-        if (correctLetters == COLUMNS) {
-            Banner.Caption = "Correct! You win!";
-            _state = GameState.OutOfGame;
-        } else if (_activeRow < ROWS - 1) {
-            _activeColumn = 0;
-            _activeRow++;
-            foreach (Square square in Grid[_activeRow]) {
-                square.Status = Status.NotTested;
-            }
-            Banner.Caption = "Guess #" + (_activeRow + 1);
-        } else {
-            Banner.Caption = "You lost! The word was: " + _word.ToUpper();
-            _state = GameState.OutOfGame;
+        UpdateGridWithStatuses(statuses);
+        UpdateGameState(correctLetters);
+    }
+
+    internal void UpdateGridWithStatuses(List<Status> statuses)
+    {
+        for (int i = 0; i < Grid[ActiveRow].Length; i++)
+        {
+            Grid[ActiveRow][i].Status = statuses[i];
         }
     }
 
-    private void ResetCurrentRow() {
-        foreach (Square square in Grid[_activeRow]) {
+    internal void UpdateGameState(int correctLetters)
+    {
+        if (correctLetters == COLUMNS)
+        {
+            Banner.Caption = "Correct! You win!";
+            State = GameState.OutOfGame;
+        }
+        else if (ActiveRow < ROWS - 1)
+        {
+            MoveToNextRow();
+        }
+        else
+        {
+            Banner.Caption = "You lost! The word was: " + Word.ToUpper();
+            State = GameState.OutOfGame;
+        }
+    }
+
+    internal void MoveToNextRow()
+    {
+        ActiveColumn = 0;
+        ActiveRow++;
+        foreach (Square square in Grid[ActiveRow])
+        {
+            square.Status = Status.NotTested;
+        }
+        Banner.Caption = "Guess #" + (ActiveRow + 1);
+    }
+
+    internal void ResetCurrentRow()
+    {
+        foreach (Square square in Grid[ActiveRow])
+        {
             square.Letter = ' ';
             square.Status = Status.NotTested;
         }
-        _activeColumn = 0;
+        ActiveColumn = 0;
     }
 }
