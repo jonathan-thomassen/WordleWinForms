@@ -138,25 +138,25 @@ public class SurfaceTests
         var brush = new SolidBrush(Color.Gray);
         var pen = new Pen(Color.Gray);
 
-        MethodInfo setBrushAndPenColorMethod = typeof(Surface).GetMethod("SetBrushAndPenColor", BindingFlags.NonPublic | BindingFlags.Static);
+        MethodInfo? setBrushAndPenColorMethod = typeof(Surface).GetMethod("SetBrushAndPenColor", BindingFlags.NonPublic | BindingFlags.Static);
 
-        setBrushAndPenColorMethod.Invoke(null, new object[] { brush, pen, Status.Correct });
+        setBrushAndPenColorMethod?.Invoke(null, [brush, pen, Status.Correct]);
         Assert.Equal(Color.Green, brush.Color);
         Assert.Equal(Color.Green, pen.Color);
 
-        setBrushAndPenColorMethod.Invoke(null, new object[] { brush, pen, Status.Incorrect });
+        setBrushAndPenColorMethod?.Invoke(null, [brush, pen, Status.Incorrect]);
         Assert.Equal(Color.Red, brush.Color);
         Assert.Equal(Color.Red, pen.Color);
 
-        setBrushAndPenColorMethod.Invoke(null, new object[] { brush, pen, Status.WrongPlace });
+        setBrushAndPenColorMethod?.Invoke(null, [brush, pen, Status.WrongPlace]);
         Assert.Equal(Color.Yellow, brush.Color);
         Assert.Equal(Color.Yellow, pen.Color);
 
-        setBrushAndPenColorMethod.Invoke(null, new object[] { brush, pen, Status.NotTested });
+        setBrushAndPenColorMethod?.Invoke(null, [brush, pen, Status.NotTested]);
         Assert.Equal(Color.White, brush.Color);
         Assert.Equal(Color.White, pen.Color);
 
-        setBrushAndPenColorMethod.Invoke(null, new object[] { brush, pen, (Status)999 });
+        setBrushAndPenColorMethod?.Invoke(null, [brush, pen, (Status)999]);
         Assert.Equal(Color.Gray, brush.Color);
         Assert.Equal(Color.Gray, pen.Color);
     }
@@ -175,9 +175,9 @@ public class SurfaceTests
         Assert.NotEmpty(output);
     }
 
-    private static T GetPrivateField<T>(object obj, string fieldName)
+    private static T? GetPrivateField<T>(object obj, string fieldName)
     {
-        FieldInfo field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
-        return (T)field.GetValue(obj);
+        FieldInfo? field = obj.GetType().GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Instance);
+        return (T?)field?.GetValue(obj);
     }
 }
