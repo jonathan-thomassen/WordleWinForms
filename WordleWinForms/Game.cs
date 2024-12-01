@@ -1,4 +1,9 @@
-﻿namespace WordleWinForms;
+﻿using static System.Windows.Forms.DataFormats;
+using System.Data.Common;
+using System.Drawing.Printing;
+using System.Drawing;
+
+namespace WordleWinForms;
 
 /// <summary>
 /// Represents the Wordle game.
@@ -9,16 +14,21 @@ internal class Game
     private const int COLUMNS = 5;
     private const int ROWS = 6;
 
+    private TableLayoutPanel _squarePanel;
+    private TableLayoutPanel _keysPanel;
+
     internal GameState State { get; set; }
-    internal Square[][] Grid { get; set; } = [];
+    internal Square[][] Grid { get; set; } = [new Square[5], new Square[5], new Square[5], new Square[5], new Square[5], new Square[5]];
     internal Banner Banner { get; private set; } = new();
     internal string Word { get; set; } = String.Empty;
     internal int ActiveRow { get; set; }
     internal int ActiveColumn { get; set; }
     internal readonly Dictionary<char, Status> Letters = new();
 
-    public Game()
+    public Game(TableLayoutPanel squarePanel, TableLayoutPanel keysPanel)
     {
+        _squarePanel = squarePanel;
+        _keysPanel = keysPanel;
         Initialize();
     }
 
@@ -29,11 +39,15 @@ internal class Game
     {
         State = GameState.InGame;
 
-        Grid = Enumerable.Range(0, ROWS)
-                          .Select(_ => Enumerable.Range(0, COLUMNS)
-                                                 .Select(_ => new Square())
-                                                 .ToArray())
-                          .ToArray();
+        for (int i = 0; i < ROWS; i++)
+        {
+            for (int j = 0; j < COLUMNS; j++)
+            {
+                Square square = new Square();
+                _squarePanel.Controls.Add(square.Label);
+                Grid[i][j] = square;
+            }
+        }
 
         foreach (var square in Grid[0])
         {
@@ -52,6 +66,9 @@ internal class Game
         Letters.Clear();
         foreach (char letter in ALPHABET)
         {
+            KeySquare kSquare = new KeySquare();
+            kSquare.Letter = letter;
+            _keysPanel.Controls.Add(kSquare.Label);
             Letters.Add(letter, Status.NotTested);
         }
     }
@@ -132,8 +149,7 @@ internal class Game
                 if (Letters[guess.ToUpper()[i]] != Status.Correct)
                     Letters[guess.ToUpper()[i]] = Status.WrongPlace;
                 tempWord[Array.IndexOf(tempWord, guess[i])] = '\0'; // Mark as used
-            }
-            else
+            } else
             {
                 statusList[i] = Status.Incorrect;
                 if (Letters[guess.ToUpper()[i]] != Status.Correct && Letters[guess.ToUpper()[i]] != Status.WrongPlace)
@@ -151,8 +167,7 @@ internal class Game
         if (State == GameState.OutOfGame)
         {
             Initialize();
-        }
-        else
+        } else
         {
             HandleKeyPress(e);
         }
@@ -163,12 +178,10 @@ internal class Game
         if (e.KeyCode >= Keys.A && e.KeyCode <= Keys.Z && Grid[ActiveRow][ActiveColumn].Letter == ' ')
         {
             HandleLetterInput(e);
-        }
-        else if (e.KeyCode == Keys.Back)
+        } else if (e.KeyCode == Keys.Back)
         {
             HandleBackspace();
-        }
-        else if (e.KeyCode == Keys.Enter && Grid[ActiveRow][ActiveColumn].Letter != ' ')
+        } else if (e.KeyCode == Keys.Enter && Grid[ActiveRow][ActiveColumn].Letter != ' ')
         {
             HandleEnter();
         }
@@ -197,8 +210,7 @@ internal class Game
         if (validationState == ValidationState.Valid)
         {
             ProcessValidGuess(guess);
-        }
-        else if (validationState == ValidationState.NotInDictionary)
+        } else if (validationState == ValidationState.NotInDictionary)
         {
             ResetCurrentRow();
             Banner.Caption = "Word not in dictionary. Try again";
@@ -226,12 +238,10 @@ internal class Game
         {
             Banner.Caption = "Correct! You win!";
             State = GameState.OutOfGame;
-        }
-        else if (ActiveRow < ROWS - 1)
+        } else if (ActiveRow < ROWS - 1)
         {
             MoveToNextRow();
-        }
-        else
+        } else
         {
             Banner.Caption = "You lost! The word was: " + Word.ToUpper();
             State = GameState.OutOfGame;

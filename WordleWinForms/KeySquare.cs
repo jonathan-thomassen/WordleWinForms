@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents a square in the Wordle game grid.
 /// </summary>
-internal class Square
+internal class KeySquare
 {
     private Status _status = Status.Inactive;
     private char _letter = ' ';
@@ -66,7 +66,7 @@ internal class Square
     /// <summary>
     /// Initializes a new instance of the <see cref="Square"/> class.
     /// </summary>
-    public Square()
+    public KeySquare()
     {
         _label = new Label()
         {
@@ -75,7 +75,7 @@ internal class Square
             ForeColor = Color.White,
             Dock = DockStyle.Fill,
             TextAlign = ContentAlignment.MiddleCenter,
-            Font = new Font("OCR A Extended", (float)28.0)
+            Font = new Font("Trebuchet MS", (float)16.0)
         };
     }
 
